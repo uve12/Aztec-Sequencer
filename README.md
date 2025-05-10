@@ -56,16 +56,19 @@ sudo apt install curl iptables screen build-essential make gcc nano automake aut
 
 ---
 
-## 2. Install Docker
+## 2. Install Docker & Docker compose
+
+* Docker 
+```
+sudo apt install docker.io
+docker --version
+```
+* Docker-Compose
 
 ```bash
-for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do sudo apt-get remove $pkg; done
-sudo apt-get install ca-certificates curl gnupg
-sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt-get update
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/bin/docker-compose && \
+sudo chmod +x /usr/bin/docker-compose && \
+sudo docker-compose --version
 ```
 
 ---
@@ -141,29 +144,47 @@ ufw allow 8080
 ---
 
 ## 10. Run Sequencer Node
-
-* Open screen
-
 ```
-screen -S aztec
+cd .aztec && \
+nano docker-compose.yml
+```
+* Paste below
+```
+version: '3.8'
+
+services:
+  node:
+    image: aztecprotocol/aztec:alpha-testnet
+    environment:
+      ETHEREUM_HOSTS: ""
+      L1_CONSENSUS_HOST_URLS: "" 
+      DATA_DIRECTORY: /data
+      VALIDATOR_PRIVATE_KEY: "<YOUR_PRIVATE_KEY>"
+      P2P_IP: "<IP_ADDRESS>"
+      LOG_LEVEL: debug
+    entrypoint: >
+      sh -c 'node --no-warnings /usr/src/yarn-project/aztec/dest/bin/index.js start --network alpha-testnet start --node --archiver --sequencer'
+    ports:
+      - 40400:40400/tcp
+      - 40400:40400/udp
+      - 8080:8080
+    volumes:
+      - /root/.aztec/data:/data
 ```
 
-```bash
-aztec start --node --archiver --sequencer \
-  --network alpha-testnet \
-  --l1-rpc-urls YOUR_RPC_URL \
-  --l1-consensus-host-urls YOUR_BEACON_URL \
-  --sequencer.validatorPrivateKey 0xYOUR_PRIVATE_KEY \
-  --sequencer.coinbase 0xYOUR_PUBLIC_ADDRESS \
-  --p2p.p2pIp YOUR_SERVER_IP \
-  --p2p.maxTxPoolSize 1000000000
+**Repalace respectively**
+
+
+* Start your docker-compose file:
+```
+docker-compose up -d
+```
+* Check logs:
+```
+docker-compose logs -f
 ```
 
-Replace values with your own details.
-
-CTRL + A + D
-
----
+Wait for your node to synchronize.
 
 ## 11. Get 'Apprentice' Role
 
