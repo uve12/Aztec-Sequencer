@@ -154,7 +154,7 @@ version: '3.8'
 
 services:
   node:
-    image: aztecprotocol/aztec:alpha-testnet
+    image: aztecprotocol/aztec:0.85.0-alpha-testnet.8
     environment:
       ETHEREUM_HOSTS: ""
       L1_CONSENSUS_HOST_URLS: "" 
@@ -245,14 +245,22 @@ sudo docker logs $(docker ps -q --filter ancestor=aztecprotocol/aztec:alpha-test
 ---
 
 ## 14. Update Node
-
+* stop first
 ```bash
-docker stop $(docker ps -q --filter "ancestor=aztecprotocol/aztec")
-docker rm $(docker ps -a -q --filter "ancestor=aztecprotocol/aztec")
-screen -XS aztec quit
+cd .aztec && \
+docker-compose down && \
+rm -rf data
 ```
 
-* Then re-run #10 step
+* Change image name
+```
+nano docker-compose.yml
+```
+
+* Run node
+```
+docker-compose up -d
+```
 
 ---
 
