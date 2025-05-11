@@ -200,8 +200,8 @@ http://localhost:8080 | jq -r ".result.proven.number"
 
 ```bash
 curl -s -X POST -H 'Content-Type: application/json' \
--d '{"jsonrpc":"2.0","method":"node_getArchiveSiblingPath","params:["BLOCK_NUMBER","BLOCK_NUMBER"],"id":67}' \
-http://localhost:8080 | jq -r ".result"
+-d '{"jsonrpc":"2.0","method":"node_getArchiveSiblingPath","params":["<block-number>","<block-number>"],"id":67}' \
+<your-node>:<your-port> | jq -r ".result"
 ```
 
 **Replace your Block number on ["BLOCK_NUMBER","BLOCK_NUMBER"] ex : if your block number from first command is 234124 , then ["234124","234124"]**
@@ -236,7 +236,7 @@ aztec add-l1-validator \
 ### Get Peer ID:
 
 ```bash
-sudo docker logs $(docker ps -q --filter ancestor=aztecprotocol/aztec:alpha-testnet | head -n 1) 2>&1 | grep -i "peerId" | grep -o '"peerId":"[^"]*"' | cut -d'"' -f4 | head -n 1
+sudo docker logs $(docker ps -q --filter ancestor=aztecprotocol/aztec:0.85.0-alpha-testnet.8 | head -n 1) 2>&1 | grep -i "peerId" | grep -o '"peerId":"[^"]*"' | cut -d'"' -f4 | head -n 1
 ```
 
 * Use [Aztec Nethermind Explorer](https://aztec.nethermind.io/) to search your Peer ID.
